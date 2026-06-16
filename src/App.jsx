@@ -51,7 +51,7 @@ const phases = [
         id: "p1-fri", day: "Friday — Combo Circuit", hasTime: true,
         exercises: [
           { name: "0.5 mile run", sets: "Target sub-6:30", note: "" },
-          { name: "8 rounds: 10 Aust. pull-ups / 10 knee push-ups / 10 squats", sets: "No time cap", note: "Rest as needed — focus on completing all 8 rounds" },
+          { name: "8 rounds: 5 Aust. pull-ups / 8 knee push-ups / 10 squats", sets: "No time cap", note: "Rest as needed — focus on completing all 8 rounds" },
           { name: "0.5 mile run", sets: "", note: "Note your total time. This is your weekly benchmark." },
         ],
       },
