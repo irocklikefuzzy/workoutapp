@@ -40,8 +40,8 @@ const phases = [
       {
         id: "p1-wed", day: "Wednesday — Squat + Core", hasTime: false,
         exercises: [
-          { name: "Air squats", sets: "4 × 40", note: "Controlled tempo: 2 sec down, pause at bottom, drive up" },
-          { name: "Goblet squat (if available)", sets: "3 × 12", note: "Even a light KB adds load quality" },
+          { name: "Air squats", sets: "3 × 20", note: "Controlled tempo: 2 sec down, pause at bottom, drive up" },
+          { name: "Donkey kickbacks", sets: "3 × 15", note: "Glute activation — squeeze at the top" },
           { name: "Plank", sets: "3 × 30–45 sec", note: "" },
           { name: "Hollow body hold", sets: "3 × 20 sec", note: "Core work directly transfers to pull-up stability" },
         ],
@@ -51,7 +51,7 @@ const phases = [
         id: "p1-fri", day: "Friday — Combo Circuit", hasTime: true,
         exercises: [
           { name: "0.5 mile run", sets: "Target sub-6:30", note: "" },
-          { name: "8 rounds: 5 Aust. pull-ups / 8 knee push-ups / 20 squats", sets: "No time cap", note: "Rest as needed — focus on completing all 8 rounds" },
+          { name: "8 rounds: 10 Aust. pull-ups / 10 knee push-ups / 10 squats", sets: "No time cap", note: "Rest as needed — focus on completing all 8 rounds" },
           { name: "0.5 mile run", sets: "", note: "Note your total time. This is your weekly benchmark." },
         ],
       },
