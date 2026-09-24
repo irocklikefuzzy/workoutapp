@@ -1,0 +1,293 @@
+From 5406ea699a04bcac3fe8b0f853963ddbf17d6ad6 Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Thu, 24 Sep 2026 00:58:36 +0000
+Subject: [PATCH] Reskin Murph tracker as The Umbral Order assassin guild
+ theme; replace volleyball with Weapon Up flow day
+
+---
+ index.html     |  6 ++--
+ src/App.jsx    | 98 ++++++++++++++++++++++++++++++++++----------------
+ vite.config.js |  6 ++--
+ 3 files changed, 74 insertions(+), 36 deletions(-)
+
+diff --git a/index.html b/index.html
+index 137e373..7ced475 100644
+--- a/index.html
++++ b/index.html
+@@ -6,11 +6,11 @@
+     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+     <meta name="theme-color" content="#0a0f14" />
+-    <meta name="description" content="12-week Murph variation training tracker" />
++    <meta name="description" content="The Umbral Order — a 12-week assassin guild training tracker (Murph variation)" />
+     <meta name="apple-mobile-web-app-capable" content="yes" />
+     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+-    <meta name="apple-mobile-web-app-title" content="Murph" />
+-    <title>Murph Tracker</title>
++    <meta name="apple-mobile-web-app-title" content="Umbral" />
++    <title>The Umbral Order</title>
+   </head>
+   <body>
+     <div id="root"></div>
+diff --git a/src/App.jsx b/src/App.jsx
+index b17278c..5042fc7 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
+ import { supabase, USER_ID, STATE_TABLE } from "./supabaseClient";
+ 
+ const TARGET_WORKOUT = {
+-  subtitle: "Your Murph Variation · Goal: Sub 60 min",
++  subtitle: "The Trial · Goal: Sub 60 min",
+   sections: [
+     { label: "Mile 1", detail: "Target 11:00", icon: "🏃" },
+     { label: "5 Pull-ups", detail: "Banded · ~2 min", icon: "💪" },
+@@ -10,14 +10,14 @@ const TARGET_WORKOUT = {
+     { label: "300 Squats", detail: "Air · ~12 min", icon: "🦵" },
+     { label: "Mile 2", detail: "Target 13:00", icon: "🏃" },
+   ],
+-  finalForm: "Final Form (Month 6+): 1mi → 10 pull-ups → 200 push-ups → 300 squats → 1mi · Sub 60 min",
++  finalForm: "Full Discipline (Month 6+): 1mi → 10 pull-ups → 200 push-ups → 300 squats → 1mi · Sub 60 min",
+ };
+ 
+ const phases = [
+   {
+-    phase: "01", name: "Build the Base", weeks: "Weeks 1–4",
++    phase: "I", name: "Initiate — The Unmarked", weeks: "Weeks 1–4",
+     accent: "#4a9eff",
+-    tagline: "Establish movement quality and cardio foundation",
++    tagline: "The Unmarked train in secret, before dawn. Establish movement quality and cardio foundation.",
+     pullupFocus: "Log your Australian pull-up max every Sunday. This is your leading indicator.",
+     schedule: [
+       {
+@@ -46,7 +46,14 @@ const phases = [
+           { name: "Hollow body hold", sets: "3 × 20 sec", note: "Core work directly transfers to pull-up stability" },
+         ],
+       },
+-      { id: "p1-thu", day: "Thursday — Volleyball 🏐", hasTime: false, exercises: [] },
++      {
++        id: "p1-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
++        exercises: [
++          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
++          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
++          { name: "Light conditioning circuit", sets: "3 rounds: 10 air squats / 10 knee push-ups", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
++        ],
++      },
+       {
+         id: "p1-fri", day: "Friday — Combo Circuit", hasTime: true,
+         exercises: [
+@@ -65,9 +72,9 @@ const phases = [
+     ],
+   },
+   {
+-    phase: "02", name: "Unlock Full Push-up", weeks: "Weeks 5–8",
++    phase: "II", name: "Blade Apprentice — First Steel", weeks: "Weeks 5–8",
+     accent: "#ff7c4a",
+-    tagline: "Transition to full push-ups. Increase pull-up load.",
++    tagline: "You've earned your first practice blade. Transition to full push-ups, increase pull-up load.",
+     pullupFocus: "If you haven't gotten a pull-up yet, that's okay — banded reps are the path. Don't skip negatives.",
+     schedule: [
+       {
+@@ -97,7 +104,14 @@ const phases = [
+           { name: "Pike push-ups", sets: "3 × 8", note: "Shoulder strength for eventual pull-up" },
+         ],
+       },
+-      { id: "p2-thu", day: "Thursday — Volleyball 🏐", hasTime: false, exercises: [] },
++      {
++        id: "p2-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
++        exercises: [
++          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
++          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
++          { name: "Light conditioning circuit", sets: "3 rounds: 15 air squats / 8 incline push-ups", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
++        ],
++      },
+       {
+         id: "p2-fri", day: "Friday — Run-First Circuit", hasTime: true,
+         exercises: [
+@@ -116,9 +130,9 @@ const phases = [
+     ],
+   },
+   {
+-    phase: "03", name: "Build the Volume", weeks: "Weeks 9–10",
++    phase: "III", name: "Shadow Adept — The Climb", weeks: "Weeks 9–10",
+     accent: "#4aff9e",
+-    tagline: "Scale push-ups toward 75. Lock in the combo.",
++    tagline: "Adepts train the climb. Scale push-ups toward 75 and lock in the combo.",
+     pullupFocus: "If you have 3+ unassisted pull-ups, attempt them before the band. Log both numbers.",
+     schedule: [
+       {
+@@ -144,7 +158,14 @@ const phases = [
+           { name: "Air squats", sets: "2 × 100", note: "Consecutive. Time it." },
+         ],
+       },
+-      { id: "p3-thu", day: "Thursday — Volleyball 🏐", hasTime: false, exercises: [] },
++      {
++        id: "p3-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
++        exercises: [
++          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
++          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
++          { name: "Light conditioning circuit", sets: "3 rounds: 20 air squats / 10 push-ups (full or knee)", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
++        ],
++      },
+       {
+         id: "p3-fri", day: "Friday — Full Dress Rehearsal", hasTime: true,
+         exercises: [
+@@ -165,9 +186,9 @@ const phases = [
+     ],
+   },
+   {
+-    phase: "04", name: "Race Week", weeks: "Weeks 11–12",
++    phase: "IV", name: "Silent Blade — Full Discipline", weeks: "Weeks 11–12",
+     accent: "#ffd84a",
+-    tagline: "Taper, sharpen, execute.",
++    tagline: "Taper, sharpen, execute. The Trial awaits.",
+     pullupFocus: "Whatever pull-ups you have on race day — use them. This is not the day to ego-lift off the band.",
+     schedule: [
+       {
+@@ -186,18 +207,24 @@ const phases = [
+         ],
+       },
+       { id: "p4-wed", day: "Wednesday — Rest", hasTime: false, exercises: [] },
+-      { id: "p4-thu", day: "Thursday — Volleyball 🏐", hasTime: false, exercises: [] },
+       {
+-        id: "p4-fri", day: "Friday or Saturday — 🏁 RACE DAY", hasTime: true,
++        id: "p4-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
++        exercises: [
++          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
++          { name: "Weapon Up: sword flow", sets: "15 min", note: "Taper the volume — sharpen the blade, don't dull it with fatigue." },
++        ],
++      },
++      {
++        id: "p4-fri", day: "Friday or Saturday — 🗡️ THE TRIAL", hasTime: true,
+         exercises: [
+-          { name: "1 mile run → 5 pull-ups → 75 push-ups → 300 squats → 1 mile run", sets: "Goal: Sub 60 min", note: "Warm up 10 min beforehand. Start mile 1 conservatively." },
++          { name: "1 mile run → 5 pull-ups → 75 push-ups → 300 squats → 1 mile run", sets: "Goal: Sub 60 min", note: "Warm up 10 min beforehand. Start mile 1 conservatively. The Order is watching." },
+         ],
+       },
+       { id: "p4-sat", day: "Saturday — Rest / Celebrate", hasTime: false, exercises: [] },
+     ],
+     milestones: [
+-      { id: "p4-m1", text: "Complete the full workout" },
+-      { id: "p4-m2", text: "Finish under 60 minutes" },
++      { id: "p4-m1", text: "Complete the Trial in full" },
++      { id: "p4-m2", text: "Finish the Trial under 60 minutes — you are Umbral Assassin" },
+     ],
+   },
+ ];
+@@ -436,11 +463,11 @@ export default function MurphPlan() {
+       <div style={{ background: "linear-gradient(180deg, #0f1923 0%, #0a0f14 100%)", borderBottom: "1px solid #1e2d3d", padding: "28px 24px 20px" }}>
+         <div style={{ maxWidth: 680, margin: "0 auto" }}>
+           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+-            <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#4a9eff" }}>12-Week Program</div>
++            <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#4a9eff" }}>12-Week Ascension</div>
+             <div style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: syncBadge.color }}>{syncBadge.text}</div>
+           </div>
+-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em", color: "#fff" }}>Murph Variation</h1>
+-          <p style={{ margin: "0 0 20px", color: "#8899aa", fontSize: 14 }}>Track your training. Advance when you're ready.</p>
++          <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em", color: "#fff" }}>The Umbral Order</h1>
++          <p style={{ margin: "0 0 20px", color: "#8899aa", fontSize: 14 }}>Rise through the ranks. Advance when you're ready.</p>
+           <div style={{ background: "#0f1923", border: "1px solid #1e2d3d", borderRadius: 10, padding: "14px 18px" }}>
+             <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#4a9eff", marginBottom: 12 }}>{TARGET_WORKOUT.subtitle}</div>
+             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+@@ -470,7 +497,7 @@ export default function MurphPlan() {
+               cursor: "pointer", letterSpacing: "0.08em", textTransform: "uppercase",
+               fontFamily: "inherit", marginBottom: -1,
+             }}>
+-              {tab === "plan" ? "Training Plan" : `Activity Log${logEntries.length ? ` (${logEntries.length})` : ""}`}
++              {tab === "plan" ? "The Path" : `Guild Log${logEntries.length ? ` (${logEntries.length})` : ""}`}
+             </button>
+           ))}
+         </div>
+@@ -519,7 +546,7 @@ export default function MurphPlan() {
+ 
+             {/* Pull-up callout */}
+             <div style={{ background: "#0f1923", borderLeft: `3px solid ${phase.accent}`, borderRadius: "0 6px 6px 0", padding: "9px 12px", marginBottom: 18, fontSize: 13, color: "#b8c8d8" }}>
+-              <span style={{ color: phase.accent, fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>Pull-up Watch · </span>
++              <span style={{ color: phase.accent, fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>Guildmaster's Watch · </span>
+               {phase.pullupFocus}
+             </div>
+ 
+@@ -529,8 +556,8 @@ export default function MurphPlan() {
+                 const key = `${activePhase}-${di}`;
+                 const isOpen = openDay === key;
+                 const hasContent = day.exercises.length > 0;
+-                const isVolleyball = day.day.includes("Volleyball");
+-                const isRest = !hasContent && !isVolleyball;
++                const isWeaponFlow = day.day.includes("Weapon Flow");
++                const isRest = !hasContent && !isWeaponFlow;
+                 const checked = isCheckedThisWeek(day.id);
+                 const latest = latestThisWeek(day.id);
+                 const allEntries = data.entries.filter(e => e.dayId === day.id);
+@@ -561,7 +588,7 @@ export default function MurphPlan() {
+                         textAlign: "left", flex: 1, padding: 0, fontFamily: "inherit",
+                       }}>
+                         <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+-                          <span style={{ fontSize: 14, fontWeight: 600, color: isRest ? "#3a4a5a" : isVolleyball ? "#8899aa" : "#e8e0d0" }}>
++                          <span style={{ fontSize: 14, fontWeight: 600, color: isRest ? "#3a4a5a" : isWeaponFlow ? "#8899aa" : "#e8e0d0" }}>
+                             {day.day}
+                           </span>
+                           {checked && latest?.date && (
+@@ -652,7 +679,7 @@ export default function MurphPlan() {
+             {/* Milestones */}
+             <div style={{ background: "#0f1923", border: `1px solid ${phase.accent}30`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+               <div style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: phase.accent, fontWeight: 700, marginBottom: 12 }}>
+-                Phase Gates — check off when achieved
++                Trials Cleared — check off when achieved
+               </div>
+               {phase.milestones.map((m, mi) => {
+                 const done = !!data.milestones[m.id];
+@@ -685,9 +712,20 @@ export default function MurphPlan() {
+                 padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer",
+                 fontFamily: "inherit", letterSpacing: "0.05em", marginBottom: 20,
+               }}>
+-                All gates cleared — advance to Phase {String(activePhase + 2).padStart(2, "0")} →
++                All gates cleared — ascend to {phases[activePhase + 1].name.split(" — ")[0]} →
+               </button>
+             )}
++
++            {/* Trial cleared — final rank achieved */}
++            {phaseComplete(phase) && activePhase === phases.length - 1 && (
++              <div style={{
++                width: "100%", background: phase.accent + "15", border: `1px solid ${phase.accent}`, borderRadius: 8,
++                padding: "16px", fontSize: 14, color: phase.accent, fontWeight: 700,
++                letterSpacing: "0.02em", marginBottom: 20, textAlign: "center",
++              }}>
++                🗡️ The Trial is cleared. You are Umbral Assassin.
++              </div>
++            )}
+           </>
+         )}
+ 
+@@ -716,10 +754,10 @@ export default function MurphPlan() {
+                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                       <div style={{ flex: 1 }}>
+                         <div style={{ fontSize: 13, color: "#d8d0c0", fontWeight: 600, marginBottom: 2 }}>
+-                          {e.day.replace(/[🏐🏁]/g, "").trim()}
++                          {e.day.replace(/[🏐🏁⚔️🗡️]/g, "").trim()}
+                         </div>
+                         <div style={{ fontSize: 11, color: "#5a7a9a" }}>
+-                          Phase {e.phaseNum} · {e.phase}
++                          Rank {e.phaseNum} · {e.phase}
+                           {e.type === "workout" && e.entry.weekLabel && (
+                             <span style={{ marginLeft: 6, color: "#3a5a7a" }}>· week of {e.entry.weekLabel}</span>
+                           )}
+diff --git a/vite.config.js b/vite.config.js
+index 3370da2..8ec78d2 100644
+--- a/vite.config.js
++++ b/vite.config.js
+@@ -9,9 +9,9 @@ export default defineConfig({
+       registerType: 'autoUpdate',
+       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+       manifest: {
+-        name: 'Murph Tracker',
+-        short_name: 'Murph',
+-        description: '12-week Murph variation training tracker',
++        name: 'The Umbral Order',
++        short_name: 'Umbral',
++        description: 'The Umbral Order — a 12-week assassin guild training tracker (Murph variation)',
+         theme_color: '#0a0f14',
+         background_color: '#0a0f14',
+         display: 'standalone',
+-- 
+2.43.0
+
