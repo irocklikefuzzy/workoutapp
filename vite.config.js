@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'The Umbral Order',
         short_name: 'Umbral',
         description: 'The Umbral Order — a 12-week assassin guild training tracker (Murph variation)',
-        theme_color: '#0a0f14',
-        background_color: '#0a0f14',
+        theme_color: '#e9dcc0',
+        background_color: '#e9dcc0',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
@@ -26,6 +26,17 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],
