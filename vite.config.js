@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Murph Tracker',
-        short_name: 'Murph',
-        description: '12-week Murph variation training tracker',
+        name: 'The Umbral Order',
+        short_name: 'Umbral',
+        description: 'The Umbral Order — a 12-week assassin guild training tracker (Murph variation)',
         theme_color: '#0a0f14',
         background_color: '#0a0f14',
         display: 'standalone',
