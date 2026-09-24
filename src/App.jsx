@@ -13,221 +13,188 @@ const TARGET_WORKOUT = {
   finalForm: "Full Discipline (Month 6+): 1mi → 10 pull-ups → 200 push-ups → 300 squats → 1mi · Sub 60 min",
 };
 
+// ─── core workouts ──────────────────────────────────────────────────────────
+// Every exercise gets a completion checkbox. trackReps / trackWeight add inputs.
+
+const WARMUP = { name: "Warm-up run", sets: "0.5 mile", note: "Easy pace. Loosen the legs." };
+const SWORD_FLOW = { name: "Sword flow", sets: "20 min", note: "Forms and blade drills. Let precision matter more than sweat." };
+
+function bladeTraining(id, { pullup, rows, pushups }) {
+  return {
+    id, day: "Monday — Blade Training", hasTime: false,
+    exercises: [
+      WARMUP,
+      { trackReps: true, repsLabel: "Best set (reps)", repsPlaceholder: "e.g. 4", ...pullup },
+      rows,
+      pushups,
+      { name: "Goblet squats", sets: "3 × 10", note: "Add weight when all 3 sets feel clean.", trackWeight: true },
+      { name: "Farmer carry", sets: "3 × 30 sec", note: "Tall posture, tight grip.", trackWeight: true },
+      SWORD_FLOW,
+    ],
+  };
+}
+
+function shadowStealth(id, { intervals, circuit }) {
+  return {
+    id, day: "Wednesday — Shadow Stealth", hasTime: false,
+    exercises: [
+      WARMUP,
+      { name: "Run intervals: 1 min hard / 1 min easy", sets: intervals, note: "Hard: you can't hold a conversation. Easy: you can." },
+      { name: circuit, sets: "3 rounds", note: "" },
+      SWORD_FLOW,
+    ],
+  };
+}
+
+function ironDiscipline(id, rdlNote = "Hinge at the hips, soft knees, flat back. Add weight when all 4 sets feel clean.") {
+  return {
+    id, day: "Thursday — Iron Discipline", hasTime: false,
+    exercises: [
+      WARMUP,
+      { name: "Romanian deadlift", sets: "4 × 8", note: rdlNote, trackWeight: true },
+      { name: "Reverse or walking lunges", sets: "3 × 10 per leg", note: "", trackWeight: true },
+      { name: "Hip thrust", sets: "3 × 8", note: "Squeeze and pause at the top.", trackWeight: true },
+      { name: "Suitcase carry", sets: "3 × 30 sec", note: "Weight in one hand. Don't lean.", trackWeight: true },
+      { name: "Dead bugs", sets: "3 × 10", note: "Low back stays pressed into the floor." },
+      SWORD_FLOW,
+    ],
+  };
+}
+
 const phases = [
   {
     phase: "I", name: "Initiate — The Unmarked", weeks: "Weeks 1–4",
     accent: "#4a9eff",
-    tagline: "The Unmarked train in secret, before dawn. Establish movement quality and cardio foundation.",
-    pullupFocus: "Log your Australian pull-up max every Sunday. This is your leading indicator.",
+    tagline: "The Unmarked train in secret, before dawn. Build movement quality and your cardio base.",
+    pullupFocus: "Negatives build the strength for your first pull-up. Log your best set every Monday. Slow and controlled beats more reps.",
     schedule: [
-      {
-        id: "p1-sun", day: "Sunday — Push + Pull", hasTime: false,
-        exercises: [
-          { name: "Australian pull-ups", sets: "4 sets to near failure", note: "Track max reps — this number should climb weekly", trackReps: true, repsLabel: "Max reps (best set)", repsPlaceholder: "e.g. 8" },
-          { name: "Negative pull-ups", sets: "3 × 3 reps", note: "Jump to bar, take 5 full seconds to lower" },
-          { name: "Knee push-ups", sets: "4 × 15", note: "Full range — chest touches floor every rep" },
-          { name: "Dead hang", sets: "3 × max hold", note: "Build toward 20 sec", trackHangTime: true, hangPlaceholder: "e.g. 18 sec" },
-        ],
-      },
-      { id: "p1-mon", day: "Monday — Rest or Walk", hasTime: false, exercises: [] },
-      {
-        id: "p1-tue", day: "Tuesday — Run", hasTime: true,
-        exercises: [
-          { name: "1 mile run", sets: "Conversational pace", note: "You should be able to speak in sentences. Don't race it." },
-          { name: "5 min walk cooldown", sets: "", note: "" },
-        ],
-      },
-      {
-        id: "p1-wed", day: "Wednesday — Squat + Core", hasTime: false,
-        exercises: [
-          { name: "Air squats", sets: "3 × 20", note: "Controlled tempo: 2 sec down, pause at bottom, drive up" },
-          { name: "Donkey kickbacks", sets: "3 × 15", note: "Glute activation — squeeze at the top" },
-          { name: "Plank", sets: "3 × 30–45 sec", note: "" },
-          { name: "Hollow body hold", sets: "3 × 20 sec", note: "Core work directly transfers to pull-up stability" },
-        ],
-      },
-      {
-        id: "p1-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
-        exercises: [
-          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
-          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
-          { name: "Light conditioning circuit", sets: "3 rounds: 10 air squats / 10 knee push-ups", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
-        ],
-      },
-      {
-        id: "p1-fri", day: "Friday — Combo Circuit", hasTime: true,
-        exercises: [
-          { name: "0.5 mile run", sets: "Target sub-6:30", note: "" },
-          { name: "8 rounds: 5 Aust. pull-ups / 8 knee push-ups / 10 squats", sets: "No time cap", note: "Rest as needed — focus on completing all 8 rounds" },
-          { name: "0.5 mile run", sets: "", note: "Note your total time. This is your weekly benchmark." },
-        ],
-      },
-      { id: "p1-sat", day: "Saturday — Rest", hasTime: false, exercises: [] },
+      bladeTraining("r1-mon", {
+        pullup: { name: "Negative pull-ups", sets: "4 × 3–5", note: "Jump to the bar, take 5 full seconds to lower." },
+        rows: { name: "Inverted rows", sets: "3 × 8", note: "Body straight, pull your chest to the bar." },
+        pushups: { name: "Knee push-ups", sets: "4 × 12", note: "Full range — chest touches the floor every rep." },
+      }),
+      shadowStealth("r1-wed", { intervals: "6 rounds", circuit: "10 air squats / 5 knee push-ups / 30 sec plank" }),
+      ironDiscipline("r1-thu"),
     ],
     milestones: [
-      { id: "p1-m1", text: "Australian pull-up max reps increases week over week" },
-      { id: "p1-m2", text: "Complete all 8 rounds of Friday circuit without stopping" },
-      { id: "p1-m3", text: "Run 1 mile without stopping (any pace)" },
-      { id: "p1-m4", text: "20 consecutive knee push-ups" },
+      { id: "r1-m1", text: "5 controlled negatives (5 sec each) in one set" },
+      { id: "r1-m2", text: "20 consecutive knee push-ups" },
+      { id: "r1-m3", text: "6 interval rounds without walking the hard minutes" },
+      { id: "r1-m4", text: "All 3 core days completed in one week" },
     ],
   },
   {
     phase: "II", name: "Blade Apprentice — First Steel", weeks: "Weeks 5–8",
     accent: "#ff7c4a",
-    tagline: "You've earned your first practice blade. Transition to full push-ups, increase pull-up load.",
-    pullupFocus: "If you haven't gotten a pull-up yet, that's okay — banded reps are the path. Don't skip negatives.",
+    tagline: "You've earned your first practice blade. Banded pull-ups and incline push-ups.",
+    pullupFocus: "Use the heaviest band you need for clean reps. When 5 feels easy, you're ready for a lighter band.",
     schedule: [
-      {
-        id: "p2-sun", day: "Sunday — Pull Focus", hasTime: false,
-        exercises: [
-          { name: "Australian pull-ups (feet elevated)", sets: "5 sets to near failure", note: "Elevating feet increases difficulty — use a chair or bench", trackReps: true, repsLabel: "Max reps (best set)", repsPlaceholder: "e.g. 10" },
-          { name: "Negative pull-ups", sets: "4 × 3–5 reps", note: "Prioritize slowness: 5–7 sec descent" },
-          { name: "Banded pull-up attempts", sets: "3 × 3", note: "Use lightest band that lets you complete the rep", trackReps: true, repsLabel: "Unassisted reps achieved", repsPlaceholder: "e.g. 1" },
-          { name: "Dead hang", sets: "3 × max", note: "Target 30 sec by end of phase", trackHangTime: true, hangPlaceholder: "e.g. 24 sec" },
-        ],
-      },
-      { id: "p2-mon", day: "Monday — Rest", hasTime: false, exercises: [] },
-      {
-        id: "p2-tue", day: "Tuesday — Run Intervals", hasTime: true,
-        exercises: [
-          { name: "0.25 mile easy warmup", sets: "", note: "" },
-          { name: "4 × 400m", sets: "90 sec rest between", note: "Target each 400m under 3:15. This builds your mile pace." },
-          { name: "0.25 mile easy cooldown", sets: "", note: "" },
-        ],
-      },
-      {
-        id: "p2-wed", day: "Wednesday — Push-up Transition", hasTime: false,
-        exercises: [
-          { name: "Full push-up attempts", sets: "5 sets — go to failure then finish on knees", note: "Even 1–2 full reps per set counts. Log your full rep count.", trackReps: true, repsLabel: "Total full push-ups across all sets", repsPlaceholder: "e.g. 12" },
-          { name: "Incline push-ups", sets: "3 × 15", note: "Use a bench or countertop — easier than floor, harder than knees" },
-          { name: "Air squats", sets: "3 × 60", note: "Building toward 300 comfort" },
-          { name: "Pike push-ups", sets: "3 × 8", note: "Shoulder strength for eventual pull-up" },
-        ],
-      },
-      {
-        id: "p2-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
-        exercises: [
-          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
-          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
-          { name: "Light conditioning circuit", sets: "3 rounds: 15 air squats / 8 incline push-ups", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
-        ],
-      },
-      {
-        id: "p2-fri", day: "Friday — Run-First Circuit", hasTime: true,
-        exercises: [
-          { name: "1 mile run", sets: "Target sub-12:30", note: "Full mile now, not 0.5" },
-          { name: "5 rounds: 5 banded pull-ups / 10 push-ups (full or mixed) / 30 squats", sets: "", note: "Rest 60 sec between rounds" },
-          { name: "Note total time", sets: "", note: "You are training the combo, not just the parts" },
-        ],
-      },
-      { id: "p2-sat", day: "Saturday — Rest", hasTime: false, exercises: [] },
+      bladeTraining("r2-mon", {
+        pullup: { name: "Band-assisted pull-ups", sets: "4 × 3–5", note: "Heavy band. Full hang at the bottom, chin over the bar at the top." },
+        rows: { name: "Inverted rows", sets: "3 × 10", note: "Body straight, pull your chest to the bar." },
+        pushups: { name: "Incline push-ups", sets: "4 × 10", note: "Bench or countertop. Lower the incline as they get easier." },
+      }),
+      shadowStealth("r2-wed", { intervals: "7 rounds", circuit: "15 air squats / 5 incline push-ups / 30 sec plank" }),
+      ironDiscipline("r2-thu"),
     ],
     milestones: [
-      { id: "p2-m1", text: "1 unassisted pull-up OR 5 clean banded pull-ups" },
-      { id: "p2-m2", text: "10 consecutive full push-ups" },
-      { id: "p2-m3", text: "1 mile run under 12:30" },
-      { id: "p2-m4", text: "Friday circuit completed in under 35 min" },
+      { id: "r2-m1", text: "5 band-assisted pull-ups in one set" },
+      { id: "r2-m2", text: "10 consecutive full push-ups" },
+      { id: "r2-m3", text: "7 interval rounds without walking the hard minutes" },
+      { id: "r2-m4", text: "Romanian deadlift weight up from your Rank I start" },
     ],
   },
   {
     phase: "III", name: "Shadow Adept — The Climb", weeks: "Weeks 9–10",
     accent: "#4aff9e",
-    tagline: "Adepts train the climb. Scale push-ups toward 75 and lock in the combo.",
-    pullupFocus: "If you have 3+ unassisted pull-ups, attempt them before the band. Log both numbers.",
+    tagline: "Adepts train the climb. Lighter band, full push-ups, longer intervals.",
+    pullupFocus: "Lighter band or more reps — pick one and log it. Try one unassisted rep at the end of each session.",
     schedule: [
-      {
-        id: "p3-sun", day: "Sunday — Pull Strength", hasTime: false,
-        exercises: [
-          { name: "Unassisted pull-ups", sets: "Work up to 3 × max", note: "Even if max is 1–2. Every rep counts.", trackReps: true, repsLabel: "Max unassisted reps (best set)", repsPlaceholder: "e.g. 3" },
-          { name: "Banded pull-ups", sets: "3 × 5 after unassisted sets", note: "" },
-          { name: "Full push-ups", sets: "5 × 15", note: "Rest 90 sec between sets. Quality over speed.", trackReps: true, repsLabel: "Total full push-ups completed", repsPlaceholder: "e.g. 65" },
-        ],
-      },
-      { id: "p3-mon", day: "Monday — Rest", hasTime: false, exercises: [] },
-      {
-        id: "p3-tue", day: "Tuesday — Run", hasTime: true,
-        exercises: [
-          { name: "1 mile easy", sets: "", note: "" },
-          { name: "1 mile at goal pace", sets: "Target sub-11:30", note: "Two miles total. Second mile is goal simulation." },
-        ],
-      },
-      {
-        id: "p3-wed", day: "Wednesday — Push Volume", hasTime: false,
-        exercises: [
-          { name: "Push-up density sets", sets: "10 push-ups every 60 sec for 10 min", note: "That's 100 push-ups. Rest the remaining seconds each minute.", trackReps: true, repsLabel: "Total full push-ups completed", repsPlaceholder: "e.g. 80" },
-          { name: "Air squats", sets: "2 × 100", note: "Consecutive. Time it." },
-        ],
-      },
-      {
-        id: "p3-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
-        exercises: [
-          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
-          { name: "Weapon Up: sword flow", sets: "20 min", note: "Forms and blade drills. Skill work — let precision matter more than sweat." },
-          { name: "Light conditioning circuit", sets: "3 rounds: 20 air squats / 10 push-ups (full or knee)", note: "Easy pace. This day sharpens you — it doesn't grind you down." },
-        ],
-      },
-      {
-        id: "p3-fri", day: "Friday — Full Dress Rehearsal", hasTime: true,
-        exercises: [
-          { name: "1 mile run", sets: "Target 11:00", note: "" },
-          { name: "5 banded pull-ups", sets: "", note: "" },
-          { name: "75 push-ups", sets: "Break however needed", note: "Track time for this block" },
-          { name: "300 squats", sets: "Break however needed", note: "Track time for this block" },
-          { name: "1 mile run", sets: "Go", note: "Note how dead your legs feel. This is the data." },
-        ],
-      },
-      { id: "p3-sat", day: "Saturday — Rest", hasTime: false, exercises: [] },
+      bladeTraining("r3-mon", {
+        pullup: { name: "Band-assisted pull-ups (lighter band)", sets: "4 × 5", note: "Or stay on the same band for 4 × 8." },
+        rows: { name: "Inverted rows", sets: "3 × 12", note: "Body straight, pull your chest to the bar." },
+        pushups: { name: "Full push-ups", sets: "4 × 8", note: "Chest to the floor, body in one line." },
+      }),
+      shadowStealth("r3-wed", { intervals: "8 rounds", circuit: "20 air squats / 5 full push-ups / 45 sec plank" }),
+      ironDiscipline("r3-thu"),
     ],
     milestones: [
-      { id: "p3-m1", text: "Complete dress rehearsal (any time)" },
-      { id: "p3-m2", text: "75 push-ups total in under 18 min" },
-      { id: "p3-m3", text: "300 squats total in under 12 min" },
-      { id: "p3-m4", text: "Both miles run without stopping" },
+      { id: "r3-m1", text: "5 pull-ups on the lighter band in one set" },
+      { id: "r3-m2", text: "20 consecutive full push-ups" },
+      { id: "r3-m3", text: "8 interval rounds without walking the hard minutes" },
+      { id: "r3-m4", text: "Run 1 mile without stopping" },
     ],
   },
   {
     phase: "IV", name: "Silent Blade — Full Discipline", weeks: "Weeks 11–12",
     accent: "#ffd84a",
-    tagline: "Taper, sharpen, execute. The Trial awaits.",
-    pullupFocus: "Whatever pull-ups you have on race day — use them. This is not the day to ego-lift off the band.",
+    tagline: "Full pull-ups, sharpened conditioning. The Trial awaits when you're ready.",
+    pullupFocus: "Full pull-ups now. Log whatever you get, then finish with the band. Take the Trial when you're ready.",
     schedule: [
-      {
-        id: "p4-sun", day: "Sunday — Short Sharpener", hasTime: false,
-        exercises: [
-          { name: "2 × 3 pull-ups (banded or unassisted)", sets: "", note: "Stay fresh. No grinding.", trackReps: true, repsLabel: "Unassisted reps today", repsPlaceholder: "e.g. 5" },
-          { name: "3 × 10 full push-ups", sets: "", note: "" },
-          { name: "2 × 20 squats", sets: "", note: "" },
-        ],
-      },
-      { id: "p4-mon", day: "Monday — Rest", hasTime: false, exercises: [] },
-      {
-        id: "p4-tue", day: "Tuesday — Easy Mile", hasTime: true,
-        exercises: [
-          { name: "1 easy mile", sets: "Conversational pace", note: "Shake out the legs, nothing more" },
-        ],
-      },
-      { id: "p4-wed", day: "Wednesday — Rest", hasTime: false, exercises: [] },
-      {
-        id: "p4-thu", day: "Thursday — Weapon Flow ⚔️", hasTime: false,
-        exercises: [
-          { name: "0.5 mile warm-up run", sets: "Easy pace", note: "Loosen the legs before blade work." },
-          { name: "Weapon Up: sword flow", sets: "15 min", note: "Taper the volume — sharpen the blade, don't dull it with fatigue." },
-        ],
-      },
-      {
-        id: "p4-fri", day: "Friday or Saturday — 🗡️ THE TRIAL", hasTime: true,
-        exercises: [
-          { name: "1 mile run → 5 pull-ups → 75 push-ups → 300 squats → 1 mile run", sets: "Goal: Sub 60 min", note: "Warm up 10 min beforehand. Start mile 1 conservatively. The Order is watching." },
-        ],
-      },
-      { id: "p4-sat", day: "Saturday — Rest / Celebrate", hasTime: false, exercises: [] },
+      bladeTraining("r4-mon", {
+        pullup: { name: "Full pull-ups", sets: "4 × max", note: "Finish each set with banded reps if needed.", repsLabel: "Best set (unassisted)", repsPlaceholder: "e.g. 2" },
+        rows: { name: "Inverted rows (feet elevated)", sets: "3 × 8", note: "Feet on a bench or chair." },
+        pushups: { name: "Full push-ups", sets: "4 × 12", note: "Chest to the floor, body in one line." },
+      }),
+      shadowStealth("r4-wed", { intervals: "6 rounds", circuit: "20 air squats / 8 full push-ups / 45 sec plank" }),
+      ironDiscipline("r4-thu", "Keep the weight steady. In the week you take the Trial, go about 20% lighter."),
     ],
     milestones: [
-      { id: "p4-m1", text: "Complete the Trial in full" },
-      { id: "p4-m2", text: "Finish the Trial under 60 minutes — you are Umbral Assassin" },
+      { id: "r4-m1", text: "1 full unassisted pull-up" },
+      { id: "r4-m2", text: "Complete the Trial in full" },
+      { id: "r4-m3", text: "Finish the Trial under 60 minutes — you are Umbral Assassin" },
     ],
   },
 ];
+
+// ─── optional sessions ──────────────────────────────────────────────────────
+
+const OPTIONAL_TARGET = 2;
+const OPTIONAL_SESSIONS = [
+  { id: "opt-long-patrol", name: "Long Patrol", detail: "30–45 min easy jog or ruck walk" },
+  { id: "opt-shadow-work", name: "Shadow Work", detail: "20 min mobility: hips, thoracic spine, shoulders" },
+  { id: "opt-weapon-up", name: "Weapon Up class", detail: "Class session" },
+];
+const OPTIONAL_IDS = new Set(OPTIONAL_SESSIONS.map(s => s.id));
+
+const TRIAL_PHASE = 3;
+const TRIAL = {
+  id: "trial", name: "The Trial",
+  detail: "1 mile → 5 pull-ups → 75 push-ups → 300 squats → 1 mile · Goal: sub 60 min",
+  note: "Warm up 10 min first and start mile 1 conservatively. The Order is watching.",
+};
+
+// Days from the original Murph program, kept so older log entries still display.
+const LEGACY_DAYS = [
+  {
+    id: "p1-sun", day: "Sunday — Push + Pull", hasTime: false,
+    exercises: [
+      { name: "Australian pull-ups", trackReps: true, repsLabel: "Max reps (best set)" },
+      { name: "Negative pull-ups" },
+      { name: "Knee push-ups" },
+      { name: "Dead hang", trackHangTime: true },
+    ],
+  },
+  { id: "p1-tue", day: "Tuesday — Run", hasTime: true, exercises: [] },
+  { id: "p1-wed", day: "Wednesday — Squat + Core", hasTime: false, exercises: [] },
+  { id: "p1-fri", day: "Friday — Combo Circuit", hasTime: true, exercises: [] },
+];
+
+// dayId → how an entry for that day is described and tracked
+const DAY_INDEX = {};
+phases.forEach(p => p.schedule.forEach(d => {
+  DAY_INDEX[d.id] = { def: d, group: `Rank ${p.phase} · ${p.name}`, accent: p.accent };
+}));
+OPTIONAL_SESSIONS.forEach(s => {
+  DAY_INDEX[s.id] = { def: { id: s.id, day: s.name, hasTime: false, exercises: [] }, group: "Optional session", accent: "#8899aa" };
+});
+DAY_INDEX[TRIAL.id] = {
+  def: { id: TRIAL.id, day: TRIAL.name, hasTime: true, exercises: [] },
+  group: `Rank ${phases[TRIAL_PHASE].phase} · ${phases[TRIAL_PHASE].name}`, accent: phases[TRIAL_PHASE].accent,
+};
+LEGACY_DAYS.forEach(d => {
+  DAY_INDEX[d.id] = { def: d, group: "Old program · Build the Base", accent: "#5a7a9a", legacy: true };
+});
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -256,6 +223,67 @@ function isInWeek(dateStr, sunday) {
     sat.setHours(23, 59, 59);
     return d >= sunday && d <= sat;
   } catch { return false; }
+}
+
+// ─── styles ─────────────────────────────────────────────────────────────────
+
+const inputStyle = (accent) => ({
+  background: "#0a0f14", border: `1px solid ${accent}40`, borderRadius: 5,
+  color: "#e8e0d0", fontSize: 13, padding: "5px 9px", fontFamily: "inherit",
+  outline: "none", width: "100%", boxSizing: "border-box",
+});
+
+const labelStyle = {
+  fontSize: 11, color: "#6a8aaa", letterSpacing: "0.08em",
+  textTransform: "uppercase", width: 80, flexShrink: 0,
+};
+
+const checkboxStyle = (checked, accent, size) => ({
+  width: size, height: size, borderRadius: size > 20 ? 5 : 4,
+  border: `2px solid ${checked ? accent : "#334455"}`,
+  background: checked ? accent : "transparent",
+  cursor: "pointer", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+});
+
+function Checkbox({ checked, accent, size = 20, onClick }) {
+  return (
+    <button onClick={onClick} style={checkboxStyle(checked, accent, size)}>
+      {checked && <span style={{ color: "#0a0f14", fontSize: size > 20 ? 13 : 11, fontWeight: 900 }}>✓</span>}
+    </button>
+  );
+}
+
+// One exercise: completion checkbox plus any reps / weight / hang inputs.
+function ExerciseTracker({ ex, stat, accent, checkable, onChange }) {
+  const hasInputs = ex.trackReps || ex.trackWeight || ex.trackHangTime;
+  const field = (label, key, placeholder) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+      <label style={labelStyle}>{label}</label>
+      <input type="text" placeholder={placeholder} value={stat[key] || ""}
+        onChange={ev => onChange(key, ev.target.value)}
+        style={{ ...inputStyle(accent), maxWidth: 140 }} />
+    </div>
+  );
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+        {checkable && <Checkbox checked={!!stat.done} accent={accent} size={18} onClick={() => onChange("done", !stat.done)} />}
+        <span style={{ fontSize: 13, color: stat.done ? accent : "#d8d0c0", fontWeight: 600, flex: 1 }}>{ex.name}</span>
+        {ex.sets && (
+          <span style={{ fontSize: 11, color: accent, background: accent + "15", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>{ex.sets}</span>
+        )}
+      </div>
+      {ex.note && <div style={{ fontSize: 11, color: "#5a7a9a", marginTop: 4, marginLeft: checkable ? 28 : 0, lineHeight: 1.5 }}>{ex.note}</div>}
+      {hasInputs && (
+        <div style={{ marginLeft: checkable ? 28 : 0 }}>
+          {ex.trackReps && field(ex.repsLabel || "Max reps", "reps", ex.repsPlaceholder || "e.g. 8")}
+          {ex.trackWeight && field("Weight", "weight", "e.g. 25 lb")}
+          {ex.trackHangTime && field("Best hang", "hangTime", "e.g. 18 sec")}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─── component ──────────────────────────────────────────────────────────────
@@ -346,19 +374,20 @@ export default function MurphPlan() {
     return arr.length ? arr[arr.length - 1] : null;
   }
 
+  function addEntry(dayId, fields = {}) {
+    const newEntry = { id: `${dayId}-${Date.now()}`, dayId, weekLabel: thisWeekLabel, date: todayStr(), time: "", exStats: {}, ...fields };
+    setData(prev => ({ ...prev, entries: [...prev.entries, newEntry] }));
+  }
+
+  function removeEntry(entryId) {
+    setData(prev => ({ ...prev, entries: prev.entries.filter(e => e.id !== entryId) }));
+  }
+
   function toggleWorkout(dayId) {
     if (isCheckedThisWeek(dayId)) {
       setData(prev => ({ ...prev, entries: prev.entries.filter(e => !(e.dayId === dayId && isInWeek(e.date, thisWeekSunday))) }));
     } else {
-      const newEntry = {
-        id: `${dayId}-${Date.now()}`,
-        dayId,
-        weekLabel: thisWeekLabel,
-        date: todayStr(),
-        time: "",
-        exStats: {},
-      };
-      setData(prev => ({ ...prev, entries: [...prev.entries, newEntry] }));
+      addEntry(dayId);
     }
   }
 
@@ -377,6 +406,19 @@ export default function MurphPlan() {
         return { ...e, exStats: { ...e.exStats, [exIndex]: { ...(e.exStats[exIndex] || {}), [field]: value } } };
       }),
     }));
+  }
+
+  // Tracking any part of a day logs it for this week.
+  function setDayExStat(dayId, exIndex, field, value) {
+    const entry = latestThisWeek(dayId);
+    if (entry) updateEntryExStat(entry.id, exIndex, field, value);
+    else addEntry(dayId, { exStats: { [exIndex]: { [field]: value } } });
+  }
+
+  function setDayTime(dayId, value) {
+    const entry = latestThisWeek(dayId);
+    if (entry) updateEntry(entry.id, "time", value);
+    else addEntry(dayId, { time: value });
   }
 
   function toggleMilestone(id) {
@@ -399,53 +441,38 @@ export default function MurphPlan() {
   // ── log entries ───────────────────────────────────────────────────────────
 
   const logEntries = [];
+  data.entries.forEach(entry => {
+    const info = DAY_INDEX[entry.dayId];
+    if (!info) return;
+    const exercises = info.def.exercises;
+    const stats = entry.exStats || {};
+    const doneCount = exercises.filter((_, ei) => stats[ei]?.done).length;
+    const exNotes = exercises.map((ex, ei) => {
+      const s = stats[ei] || {};
+      const parts = [];
+      if (ex.trackReps && s.reps) parts.push(`${ex.repsLabel || "Max reps"}: ${s.reps}`);
+      if (ex.trackWeight && s.weight) parts.push(`Weight: ${s.weight}`);
+      if (ex.trackHangTime && s.hangTime) parts.push(`Hang: ${s.hangTime}`);
+      return parts.length ? `${ex.name} — ${parts.join(", ")}` : null;
+    }).filter(Boolean);
+    logEntries.push({ type: "workout", uid: entry.id, entry, info, label: info.def.day, group: info.group, accent: info.accent, date: entry.date, doneCount, exNotes });
+  });
   phases.forEach(p => {
-    p.schedule.forEach(d => {
-      data.entries.filter(e => e.dayId === d.id).forEach(entry => {
-        const trackableExercises = d.exercises.map((ex, ei) => {
-          if (!ex.trackReps && !ex.trackHangTime) return null;
-          const s = entry.exStats[ei] || {};
-          return { exIndex: ei, name: ex.name, trackReps: ex.trackReps, repsLabel: ex.repsLabel, trackHangTime: ex.trackHangTime, reps: s.reps || "", hangTime: s.hangTime || "" };
-        }).filter(Boolean);
-        const exNotes = trackableExercises.map(ex => {
-          const parts = [];
-          if (ex.reps !== "") parts.push(`${ex.repsLabel || "Max reps"}: ${ex.reps}`);
-          if (ex.hangTime !== "") parts.push(`Hang: ${ex.hangTime}`);
-          return parts.length ? `${ex.name} — ${parts.join(", ")}` : null;
-        }).filter(Boolean);
-        logEntries.push({ type: "workout", entry, day: d.day, phase: p.name, phaseNum: p.phase, accent: p.accent, hasTime: d.hasTime, trackableExercises, exNotes });
-      });
-    });
     p.milestones.forEach(m => {
       if (data.milestones[m.id]) {
-        logEntries.push({ type: "milestone", milestoneId: m.id, day: m.text, phase: p.name, phaseNum: p.phase, accent: p.accent, date: data.milestones[m.id].date });
+        logEntries.push({ type: "milestone", uid: m.id, milestoneId: m.id, label: m.text, group: `Rank ${p.phase} · ${p.name}`, accent: p.accent, date: data.milestones[m.id].date });
       }
     });
   });
-  logEntries.sort((a, b) => {
-    const da = a.type === "workout" ? a.entry.date : a.date;
-    const db = b.type === "workout" ? b.entry.date : b.date;
-    return new Date(db) - new Date(da);
-  });
+  logEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   // ── stats ─────────────────────────────────────────────────────────────────
 
-  const completedThisPhase = phase.schedule.filter(d => d.exercises.length > 0 && isCheckedThisWeek(d.id)).length;
-  const totalWorkoutDays = phase.schedule.filter(d => d.exercises.length > 0).length;
+  const completedThisPhase = phase.schedule.filter(d => isCheckedThisWeek(d.id)).length;
   const completedMilestones = phase.milestones.filter(m => data.milestones[m.id]).length;
-
-  // ── styles ────────────────────────────────────────────────────────────────
-
-  const inputStyle = (accent) => ({
-    background: "#0a0f14", border: `1px solid ${accent}40`, borderRadius: 5,
-    color: "#e8e0d0", fontSize: 13, padding: "5px 9px", fontFamily: "inherit",
-    outline: "none", width: "100%", boxSizing: "border-box",
-  });
-
-  const labelStyle = {
-    fontSize: 11, color: "#6a8aaa", letterSpacing: "0.08em",
-    textTransform: "uppercase", width: 80, flexShrink: 0,
-  };
+  const optionalThisWeek = data.entries.filter(e => OPTIONAL_IDS.has(e.dayId) && isInWeek(e.date, thisWeekSunday));
+  const trialEntries = data.entries.filter(e => e.dayId === TRIAL.id);
+  const latestTrial = trialEntries.length ? trialEntries[trialEntries.length - 1] : null;
 
   const syncBadge = (() => {
     if (!loaded) return { text: "Loading…", color: "#8899aa" };
@@ -453,6 +480,16 @@ export default function MurphPlan() {
     if (syncStatus === "error") return { text: "Sync error", color: "#cc6666" };
     return { text: "Synced", color: "#4aff9e" };
   })();
+
+  const smallButton = (accent) => ({
+    background: "transparent", border: `1px solid ${accent}60`, borderRadius: 5,
+    padding: "4px 10px", cursor: "pointer", fontSize: 11, color: accent,
+    fontFamily: "inherit", fontWeight: 700, letterSpacing: "0.05em", flexShrink: 0,
+  });
+
+  const sectionHeading = (accent) => ({
+    fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: accent, fontWeight: 700, marginBottom: 12,
+  });
 
   // ── render ────────────────────────────────────────────────────────────────
 
@@ -505,7 +542,7 @@ export default function MurphPlan() {
         {/* ══════════════ PLAN TAB ══════════════ */}
         {activeTab === "plan" && (
           <>
-            {/* Phase selector */}
+            {/* Rank selector */}
             <div style={{ display: "flex", gap: 8, margin: "20px 0 16px", flexWrap: "wrap" }}>
               {phases.map((p, i) => {
                 const done = phaseComplete(p);
@@ -523,7 +560,7 @@ export default function MurphPlan() {
               })}
             </div>
 
-            {/* Phase header */}
+            {/* Rank header */}
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 3 }}>
                 <span style={{ fontSize: 32, fontWeight: 700, color: phase.accent, letterSpacing: "-0.03em" }}>{phase.phase}</span>
@@ -533,7 +570,7 @@ export default function MurphPlan() {
 
               {/* Current week banner */}
               <div style={{ fontSize: 12, color: phase.accent, marginBottom: 6 }}>
-                Week of {thisWeekLabel} · {completedThisPhase}/{totalWorkoutDays} workouts this week
+                Week of {thisWeekLabel} · {completedThisPhase}/{phase.schedule.length} core · {optionalThisWeek.length}/{OPTIONAL_TARGET} optional
               </div>
 
               <div style={{ display: "flex", gap: 12, fontSize: 12, color: "#8899aa", marginBottom: 6 }}>
@@ -550,18 +587,16 @@ export default function MurphPlan() {
               {phase.pullupFocus}
             </div>
 
-            {/* Schedule */}
+            {/* Core schedule */}
             <div style={{ marginBottom: 20 }}>
               {phase.schedule.map((day, di) => {
                 const key = `${activePhase}-${di}`;
                 const isOpen = openDay === key;
-                const hasContent = day.exercises.length > 0;
-                const isWeaponFlow = day.day.includes("Weapon Flow");
-                const isRest = !hasContent && !isWeaponFlow;
                 const checked = isCheckedThisWeek(day.id);
                 const latest = latestThisWeek(day.id);
                 const allEntries = data.entries.filter(e => e.dayId === day.id);
                 const prevCount = allEntries.length - (checked ? 1 : 0);
+                const doneCount = day.exercises.filter((_, ei) => latest?.exStats?.[ei]?.done).length;
 
                 return (
                   <div key={di} style={{ marginBottom: 7 }}>
@@ -572,28 +607,18 @@ export default function MurphPlan() {
                       padding: "10px 14px",
                       display: "flex", alignItems: "center", gap: 10,
                     }}>
-                      {hasContent && (
-                        <button onClick={() => toggleWorkout(day.id)} style={{
-                          width: 22, height: 22, borderRadius: 5,
-                          border: `2px solid ${checked ? phase.accent : "#334455"}`,
-                          background: checked ? phase.accent : "transparent",
-                          cursor: "pointer", flexShrink: 0,
-                          display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
-                        }}>
-                          {checked && <span style={{ color: "#0a0f14", fontSize: 13, fontWeight: 900 }}>✓</span>}
-                        </button>
-                      )}
-                      <button onClick={() => hasContent && setOpenDay(isOpen ? null : key)} style={{
-                        background: "none", border: "none", cursor: hasContent ? "pointer" : "default",
+                      <Checkbox checked={checked} accent={phase.accent} size={22} onClick={() => toggleWorkout(day.id)} />
+                      <button onClick={() => setOpenDay(isOpen ? null : key)} style={{
+                        background: "none", border: "none", cursor: "pointer",
                         textAlign: "left", flex: 1, padding: 0, fontFamily: "inherit",
                       }}>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: isRest ? "#3a4a5a" : isWeaponFlow ? "#8899aa" : "#e8e0d0" }}>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#e8e0d0" }}>
                             {day.day}
                           </span>
                           {checked && latest?.date && (
                             <span style={{ fontSize: 11, color: phase.accent }}>
-                              logged {latest.date}{latest.time ? ` · ${latest.time}` : ""}
+                              logged {latest.date} · {doneCount}/{day.exercises.length} done
                             </span>
                           )}
                           {prevCount > 0 && (
@@ -603,68 +628,23 @@ export default function MurphPlan() {
                           )}
                         </div>
                       </button>
-                      {hasContent && <span style={{ color: phase.accent, fontSize: 14, flexShrink: 0 }}>{isOpen ? "−" : "+"}</span>}
+                      <span style={{ color: phase.accent, fontSize: 14, flexShrink: 0 }}>{isOpen ? "−" : "+"}</span>
                     </div>
 
                     {isOpen && (
                       <div style={{ background: "#0d1820", border: `1px solid ${phase.accent}30`, borderTop: "none", borderRadius: "0 0 8px 8px", padding: "4px 0 12px" }}>
-                        {day.exercises.map((ex, ei) => {
-                          const stat = latest?.exStats?.[ei] || {};
-                          return (
-                            <div key={ei} style={{ padding: "10px 16px", borderBottom: ei < day.exercises.length - 1 ? "1px solid #1a2530" : "none" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: (ex.trackReps || ex.trackHangTime) ? 8 : 0 }}>
-                                <span style={{ fontSize: 13, color: "#d8d0c0", fontWeight: 600, flex: 1 }}>{ex.name}</span>
-                                {ex.sets && (
-                                  <span style={{ fontSize: 11, color: phase.accent, background: phase.accent + "15", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>{ex.sets}</span>
-                                )}
-                              </div>
-                              {ex.note && <div style={{ fontSize: 11, color: "#5a7a9a", marginBottom: (ex.trackReps || ex.trackHangTime) ? 8 : 0, lineHeight: 1.5 }}>{ex.note}</div>}
-                              {ex.trackReps && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: ex.trackHangTime ? 6 : 0 }}>
-                                  <label style={labelStyle}>{ex.repsLabel || "Max reps"}</label>
-                                  <input type="text" placeholder={ex.repsPlaceholder || "e.g. 8"} value={stat.reps || ""}
-                                    onChange={ev => {
-                                      const entry = latestThisWeek(day.id);
-                                      if (entry) updateEntryExStat(entry.id, ei, "reps", ev.target.value);
-                                      else {
-                                        const newEntry = { id: `${day.id}-${Date.now()}`, dayId: day.id, weekLabel: thisWeekLabel, date: todayStr(), time: "", exStats: { [ei]: { reps: ev.target.value } } };
-                                        setData(prev => ({ ...prev, entries: [...prev.entries, newEntry] }));
-                                      }
-                                    }}
-                                    style={{ ...inputStyle(phase.accent), maxWidth: 140 }} />
-                                </div>
-                              )}
-                              {ex.trackHangTime && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <label style={labelStyle}>Best hang</label>
-                                  <input type="text" placeholder={ex.hangPlaceholder || "e.g. 18 sec"} value={stat.hangTime || ""}
-                                    onChange={ev => {
-                                      const entry = latestThisWeek(day.id);
-                                      if (entry) updateEntryExStat(entry.id, ei, "hangTime", ev.target.value);
-                                      else {
-                                        const newEntry = { id: `${day.id}-${Date.now()}`, dayId: day.id, weekLabel: thisWeekLabel, date: todayStr(), time: "", exStats: { [ei]: { hangTime: ev.target.value } } };
-                                        setData(prev => ({ ...prev, entries: [...prev.entries, newEntry] }));
-                                      }
-                                    }}
-                                    style={{ ...inputStyle(phase.accent), maxWidth: 140 }} />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                        {day.exercises.map((ex, ei) => (
+                          <div key={ei} style={{ padding: "10px 16px", borderBottom: ei < day.exercises.length - 1 ? "1px solid #1a2530" : "none" }}>
+                            <ExerciseTracker ex={ex} stat={latest?.exStats?.[ei] || {}} accent={phase.accent} checkable
+                              onChange={(field, value) => setDayExStat(day.id, ei, field, value)} />
+                          </div>
+                        ))}
                         {day.hasTime && (
                           <div style={{ padding: "10px 16px 2px", borderTop: "1px solid #1a2530", marginTop: 4 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <label style={labelStyle}>Record time</label>
                               <input type="text" placeholder="e.g. 11:42" value={latest?.time || ""}
-                                onChange={ev => {
-                                  const entry = latestThisWeek(day.id);
-                                  if (entry) updateEntry(entry.id, "time", ev.target.value);
-                                  else {
-                                    const newEntry = { id: `${day.id}-${Date.now()}`, dayId: day.id, weekLabel: thisWeekLabel, date: todayStr(), time: ev.target.value, exStats: {} };
-                                    setData(prev => ({ ...prev, entries: [...prev.entries, newEntry] }));
-                                  }
-                                }}
+                                onChange={ev => setDayTime(day.id, ev.target.value)}
                                 style={{ ...inputStyle(phase.accent), maxWidth: 200 }} />
                             </div>
                           </div>
@@ -674,26 +654,69 @@ export default function MurphPlan() {
                   </div>
                 );
               })}
+              <div style={{ fontSize: 12, color: "#5a7a9a", padding: "4px 2px" }}>
+                Tue · Fri · Sat · Sun — rest, or take an optional session.
+              </div>
             </div>
+
+            {/* Optional sessions */}
+            <div style={{ background: "#0f1923", border: "1px solid #1e2d3d", borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+              <div style={sectionHeading(phase.accent)}>
+                Optional Sessions · {optionalThisWeek.length}/{OPTIONAL_TARGET} this week
+              </div>
+              {OPTIONAL_SESSIONS.map((s, si) => (
+                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: si < OPTIONAL_SESSIONS.length - 1 ? "1px solid #1a2530" : "none" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, color: "#d8d0c0", fontWeight: 600 }}>{s.name}</div>
+                    <div style={{ fontSize: 11, color: "#5a7a9a", marginTop: 2 }}>{s.detail}</div>
+                  </div>
+                  <button onClick={() => addEntry(s.id)} style={smallButton(phase.accent)}>+ Log today</button>
+                </div>
+              ))}
+              {optionalThisWeek.length > 0 && (
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #1a2530" }}>
+                  {optionalThisWeek.map(e => (
+                    <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: phase.accent, padding: "3px 0" }}>
+                      <span style={{ flex: 1 }}>✓ {DAY_INDEX[e.dayId].def.day} · {e.date}</span>
+                      <button onClick={() => removeEntry(e.id)} aria-label="Remove" style={{ ...smallButton("#6a8aaa"), padding: "1px 8px" }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* The Trial — Rank IV only, taken when ready */}
+            {activePhase === TRIAL_PHASE && (
+              <div style={{ background: phase.accent + "10", border: `1px solid ${phase.accent}60`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+                <div style={sectionHeading(phase.accent)}>🗡️ The Trial · when you're ready</div>
+                <div style={{ fontSize: 13, color: "#d8d0c0", fontWeight: 600 }}>{TRIAL.detail}</div>
+                <div style={{ fontSize: 11, color: "#5a7a9a", marginTop: 4, lineHeight: 1.5 }}>{TRIAL.note}</div>
+                {latestTrial && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+                    <label style={labelStyle}>Time · {latestTrial.date}</label>
+                    <input type="text" placeholder="e.g. 58:30" value={latestTrial.time || ""}
+                      onChange={ev => updateEntry(latestTrial.id, "time", ev.target.value)}
+                      style={{ ...inputStyle(phase.accent), maxWidth: 140 }} />
+                  </div>
+                )}
+                <button onClick={() => addEntry(TRIAL.id)} style={{ ...smallButton(phase.accent), marginTop: 12 }}>
+                  {latestTrial ? "+ Log another attempt" : "+ Log the Trial"}
+                </button>
+              </div>
+            )}
 
             {/* Milestones */}
             <div style={{ background: "#0f1923", border: `1px solid ${phase.accent}30`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
-              <div style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: phase.accent, fontWeight: 700, marginBottom: 12 }}>
+              <div style={sectionHeading(phase.accent)}>
                 Trials Cleared — check off when achieved
               </div>
               {phase.milestones.map((m, mi) => {
                 const done = !!data.milestones[m.id];
                 return (
                   <div key={mi} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "7px 0", borderBottom: mi < phase.milestones.length - 1 ? "1px solid #1a2530" : "none" }}>
-                    <button onClick={() => toggleMilestone(m.id)} style={{
-                      width: 20, height: 20, borderRadius: 4,
-                      border: `2px solid ${done ? phase.accent : "#334455"}`,
-                      background: done ? phase.accent : "transparent",
-                      cursor: "pointer", flexShrink: 0, marginTop: 1,
-                      display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
-                    }}>
-                      {done && <span style={{ color: "#0a0f14", fontSize: 11, fontWeight: 900 }}>✓</span>}
-                    </button>
+                    <div style={{ marginTop: 1 }}>
+                      <Checkbox checked={done} accent={phase.accent} onClick={() => toggleMilestone(m.id)} />
+                    </div>
                     <div style={{ flex: 1 }}>
                       <span style={{ fontSize: 13, color: done ? phase.accent : "#c8c0b0", textDecoration: done ? "line-through" : "none" }}>{m.text}</span>
                       {done && data.milestones[m.id]?.date && (
@@ -741,12 +764,13 @@ export default function MurphPlan() {
                 No workouts logged yet. Check off your first session to start.
               </div>
             ) : (
-              logEntries.map((e, i) => {
-                const uid = e.type === "workout" ? e.entry.id : e.milestoneId;
-                const isEditing = editingEntryId === uid;
+              logEntries.map(e => {
+                const isEditing = editingEntryId === e.uid;
+                const exercises = e.type === "workout" ? e.info.def.exercises : [];
+                const checkable = e.type === "workout" && !e.info.legacy;
 
                 return (
-                  <div key={i} style={{
+                  <div key={e.uid} style={{
                     background: "#0f1923",
                     border: `1px solid ${isEditing ? e.accent + "80" : e.accent + "25"}`,
                     borderRadius: 7, padding: "11px 14px", marginBottom: 7,
@@ -754,10 +778,10 @@ export default function MurphPlan() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, color: "#d8d0c0", fontWeight: 600, marginBottom: 2 }}>
-                          {e.day.replace(/[🏐🏁⚔️🗡️]/g, "").trim()}
+                          {e.label}
                         </div>
                         <div style={{ fontSize: 11, color: "#5a7a9a" }}>
-                          Rank {e.phaseNum} · {e.phase}
+                          {e.group}
                           {e.type === "workout" && e.entry.weekLabel && (
                             <span style={{ marginLeft: 6, color: "#3a5a7a" }}>· week of {e.entry.weekLabel}</span>
                           )}
@@ -766,9 +790,7 @@ export default function MurphPlan() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                         {!isEditing && (
                           <div style={{ textAlign: "right" }}>
-                            <div style={{ fontSize: 12, color: e.accent }}>
-                              {e.type === "workout" ? e.entry.date : e.date}
-                            </div>
+                            <div style={{ fontSize: 12, color: e.accent }}>{e.date}</div>
                             {e.type === "workout" && e.entry.time && (
                               <div style={{ fontSize: 12, color: "#8899aa", marginTop: 1 }}>{e.entry.time}</div>
                             )}
@@ -777,7 +799,7 @@ export default function MurphPlan() {
                             )}
                           </div>
                         )}
-                        <button onClick={() => setEditingEntryId(isEditing ? null : uid)} style={{
+                        <button onClick={() => setEditingEntryId(isEditing ? null : e.uid)} style={{
                           background: isEditing ? e.accent : "transparent",
                           border: `1px solid ${isEditing ? e.accent : "#2a3a4a"}`,
                           borderRadius: 5, padding: "4px 9px", cursor: "pointer",
@@ -789,8 +811,11 @@ export default function MurphPlan() {
                       </div>
                     </div>
 
-                    {!isEditing && e.type === "workout" && e.exNotes.length > 0 && (
+                    {!isEditing && e.type === "workout" && (e.exNotes.length > 0 || (checkable && exercises.length > 0)) && (
                       <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #1a2530" }}>
+                        {checkable && exercises.length > 0 && (
+                          <div style={{ fontSize: 12, color: "#8899aa", marginBottom: 2 }}>{e.doneCount}/{exercises.length} exercises done</div>
+                        )}
                         {e.exNotes.map((n, ni) => (
                           <div key={ni} style={{ fontSize: 12, color: "#6a8aaa", marginBottom: 2 }}>{n}</div>
                         ))}
@@ -803,7 +828,7 @@ export default function MurphPlan() {
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <label style={labelStyle}>Date</label>
                           <input type="text"
-                            value={e.type === "workout" ? e.entry.date : e.date}
+                            value={e.date}
                             onChange={ev => {
                               if (e.type === "workout") updateEntry(e.entry.id, "date", ev.target.value);
                               else updateMilestoneDate(e.milestoneId, ev.target.value);
@@ -812,7 +837,7 @@ export default function MurphPlan() {
                             style={{ ...inputStyle(e.accent), maxWidth: 200 }} />
                         </div>
 
-                        {e.type === "workout" && e.hasTime && (
+                        {e.type === "workout" && e.info.def.hasTime && (
                           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                             <label style={labelStyle}>Time</label>
                             <input type="text"
@@ -823,32 +848,22 @@ export default function MurphPlan() {
                           </div>
                         )}
 
-                        {e.type === "workout" && e.trackableExercises.map((ex, xi) => {
-                          const s = e.entry.exStats[ex.exIndex] || {};
+                        {exercises.map((ex, ei) => {
+                          if (!checkable && !ex.trackReps && !ex.trackHangTime) return null;
                           return (
-                            <div key={xi} style={{ paddingTop: 8, borderTop: "1px solid #1a2530" }}>
-                              <div style={{ fontSize: 12, color: "#8899aa", marginBottom: 8, fontStyle: "italic" }}>{ex.name}</div>
-                              {ex.trackReps && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: ex.trackHangTime ? 8 : 0 }}>
-                                  <label style={{ ...labelStyle, width: 90 }}>{ex.repsLabel ? ex.repsLabel.split(" ").slice(0, 2).join(" ") : "Max reps"}</label>
-                                  <input type="text" value={s.reps || ""}
-                                    onChange={ev => updateEntryExStat(e.entry.id, ex.exIndex, "reps", ev.target.value)}
-                                    placeholder="e.g. 8"
-                                    style={{ ...inputStyle(e.accent), maxWidth: 120 }} />
-                                </div>
-                              )}
-                              {ex.trackHangTime && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <label style={{ ...labelStyle, width: 90 }}>Hang time</label>
-                                  <input type="text" value={s.hangTime || ""}
-                                    onChange={ev => updateEntryExStat(e.entry.id, ex.exIndex, "hangTime", ev.target.value)}
-                                    placeholder="e.g. 22 sec"
-                                    style={{ ...inputStyle(e.accent), maxWidth: 120 }} />
-                                </div>
-                              )}
+                            <div key={ei} style={{ paddingTop: 8, borderTop: "1px solid #1a2530" }}>
+                              <ExerciseTracker ex={{ ...ex, note: "" }} stat={e.entry.exStats?.[ei] || {}} accent={e.accent} checkable={checkable}
+                                onChange={(field, value) => updateEntryExStat(e.entry.id, ei, field, value)} />
                             </div>
                           );
                         })}
+
+                        {e.type === "workout" && (
+                          <button onClick={() => { removeEntry(e.entry.id); setEditingEntryId(null); }}
+                            style={{ ...smallButton("#cc6666"), alignSelf: "flex-start" }}>
+                            Delete entry
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
