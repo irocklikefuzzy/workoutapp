@@ -277,27 +277,68 @@ function Checkbox({ checked, accent, size = 20, onClick }) {
   );
 }
 
-// One exercise: completion checkbox plus any reps / weight / hang inputs.
+// "4 × 8" → 4, "3 rounds" → 3; durations like "20 min" have no sets.
+function setCount(ex) {
+  const m = /^(\d+)\s*(×|rounds?\b)/.exec(ex.sets || "");
+  return m ? Number(m[1]) : 0;
+}
+
+function SetPips({ count, setsDone, accent, onToggle }) {
+  return (
+    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+      {Array.from({ length: count }, (_, i) => {
+        const on = !!setsDone[i];
+        return (
+          <button key={i} onClick={() => onToggle(i)} aria-label={`Set ${i + 1}${on ? " done" : ""}`} style={{
+            width: 28, height: 28, borderRadius: "50%", padding: 0, cursor: "pointer",
+            border: `2px solid ${on ? accent : "#a89070"}`, background: on ? accent : "transparent",
+            color: on ? "#e9dcc0" : "#6b5639", fontSize: 12, fontWeight: 700, fontFamily: "inherit",
+          }}>
+            {on ? "✓" : i + 1}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// One exercise: completion checkbox, set pips, plus any reps / weight / hang inputs.
+// onChange takes a patch of stat fields, e.g. { weight: "25 lb" }.
 function ExerciseTracker({ ex, stat, accent, checkable, onChange }) {
   const hasInputs = ex.trackReps || ex.trackWeight || ex.trackHangTime;
+  const nSets = checkable ? setCount(ex) : 0;
+  const setsDone = stat.setsDone || [];
+  const toggleSet = (i) => {
+    const next = Array.from({ length: nSets }, (_, j) => j === i ? !setsDone[j] : !!setsDone[j]);
+    onChange({ setsDone: next, done: next.every(Boolean) });
+  };
+  const toggleDone = () => {
+    const done = !stat.done;
+    onChange(nSets ? { done, setsDone: Array(nSets).fill(done) } : { done });
+  };
   const field = (label, key, placeholder) => (
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
       <label style={labelStyle}>{label}</label>
       <input type="text" placeholder={placeholder} value={stat[key] || ""}
-        onChange={ev => onChange(key, ev.target.value)}
+        onChange={ev => onChange({ [key]: ev.target.value })}
         style={{ ...inputStyle(accent), maxWidth: 140 }} />
     </div>
   );
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
-        {checkable && <Checkbox checked={!!stat.done} accent={accent} size={18} onClick={() => onChange("done", !stat.done)} />}
+        {checkable && <Checkbox checked={!!stat.done} accent={accent} size={18} onClick={toggleDone} />}
         <span style={{ fontSize: 13, color: stat.done ? accent : "#3b2a1a", fontWeight: 600, flex: 1 }}>{ex.name}</span>
         {ex.sets && (
           <span style={{ fontSize: 11, color: accent, background: accent + "15", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>{ex.sets}</span>
         )}
       </div>
       {ex.note && <div style={{ fontSize: 11, color: "#6b5639", marginTop: 4, marginLeft: checkable ? 28 : 0, lineHeight: 1.5 }}>{ex.note}</div>}
+      {nSets > 0 && (
+        <div style={{ marginLeft: 28 }}>
+          <SetPips count={nSets} setsDone={setsDone} accent={accent} onToggle={toggleSet} />
+        </div>
+      )}
       {hasInputs && (
         <div style={{ marginLeft: checkable ? 28 : 0 }}>
           {ex.trackReps && field(ex.repsLabel || "Max reps", "reps", ex.repsPlaceholder || "e.g. 8")}
@@ -421,21 +462,21 @@ export default function MurphPlan() {
     }));
   }
 
-  function updateEntryExStat(entryId, exIndex, field, value) {
+  function updateEntryExStat(entryId, exIndex, patch) {
     setData(prev => ({
       ...prev,
       entries: prev.entries.map(e => {
         if (e.id !== entryId) return e;
-        return { ...e, exStats: { ...e.exStats, [exIndex]: { ...(e.exStats[exIndex] || {}), [field]: value } } };
+        return { ...e, exStats: { ...e.exStats, [exIndex]: { ...(e.exStats[exIndex] || {}), ...patch } } };
       }),
     }));
   }
 
   // Tracking any part of a day logs it for this week.
-  function setDayExStat(dayId, exIndex, field, value) {
+  function setDayExStat(dayId, exIndex, patch) {
     const entry = latestThisWeek(dayId);
-    if (entry) updateEntryExStat(entry.id, exIndex, field, value);
-    else addEntry(dayId, { exStats: { [exIndex]: { [field]: value } } });
+    if (entry) updateEntryExStat(entry.id, exIndex, patch);
+    else addEntry(dayId, { exStats: { [exIndex]: patch } });
   }
 
   function setDayTime(dayId, value) {
@@ -473,6 +514,9 @@ export default function MurphPlan() {
     const exNotes = exercises.map((ex, ei) => {
       const s = stats[ei] || {};
       const parts = [];
+      const nSets = setCount(ex);
+      const setsLogged = (s.setsDone || []).filter(Boolean).length;
+      if (nSets && setsLogged && !s.done) parts.push(`${setsLogged}/${nSets} sets`);
       if (ex.trackReps && s.reps) parts.push(`${ex.repsLabel || "Max reps"}: ${s.reps}`);
       if (ex.trackWeight && s.weight) parts.push(`Weight: ${s.weight}`);
       if (ex.trackHangTime && s.hangTime) parts.push(`Hang: ${s.hangTime}`);
@@ -659,7 +703,7 @@ export default function MurphPlan() {
                         {day.exercises.map((ex, ei) => (
                           <div key={ei} style={{ padding: "10px 16px", borderBottom: ei < day.exercises.length - 1 ? "1px solid #dccba6" : "none" }}>
                             <ExerciseTracker ex={ex} stat={latest?.exStats?.[ei] || {}} accent={phase.accent} checkable
-                              onChange={(field, value) => setDayExStat(day.id, ei, field, value)} />
+                              onChange={patch => setDayExStat(day.id, ei, patch)} />
                           </div>
                         ))}
                         {day.hasTime && (
@@ -876,7 +920,7 @@ export default function MurphPlan() {
                           return (
                             <div key={ei} style={{ paddingTop: 8, borderTop: "1px solid #dccba6" }}>
                               <ExerciseTracker ex={{ ...ex, note: "" }} stat={e.entry.exStats?.[ei] || {}} accent={e.accent} checkable={checkable}
-                                onChange={(field, value) => updateEntryExStat(e.entry.id, ei, field, value)} />
+                                onChange={patch => updateEntryExStat(e.entry.id, ei, patch)} />
                             </div>
                           );
                         })}
